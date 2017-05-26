@@ -12,6 +12,8 @@ $ cd ..
 $ ⎜
 ```
 
+The reality is actually better, because the prompt is colored.
+
 ## Installation
 
 Make sure you have Python 3 installed:
