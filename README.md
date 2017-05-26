@@ -1,0 +1,2 @@
+# prompt
+My bash prompt
