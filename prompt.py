@@ -1,50 +1,61 @@
 import os
 import re
 import subprocess
-import datetime
+from pathlib import Path
 
 
-color_blue = '\033[1;34m'
-color_yellow = '\033[1;33m'
-color_light_red = '\033[1;31m'
-color_gray = '\033[1;37m'
-color_reset = '\033[0m'
+VIRTUAL_ENV = os.getenv('VIRTUAL_ENV')
+
+
+COLOR_BLUE = '\033[1;34m'
+COLOR_YELLOW = '\033[1;33m'
+COLOR_LIGHT_RED = '\033[1;31m'
+COLOR_GRAY = '\033[1;37m'
+COLOR_RESET = '\033[0m'
 
 
 def c(text, color_code):
-    return f'{color_code}{text}{color_reset}'
+    return f'{color_code}{text}{COLOR_RESET}'
 
 
-now = datetime.datetime.now()
-time = c('{:%H:%M}'.format(now), color_gray)
+cwd = Path(os.getcwd())
+venv_path = Path(VIRTUAL_ENV) if VIRTUAL_ENV else None
 
 
-path = c('\w', color_blue)
-
-
-virtual_env_path = os.getenv('VIRTUAL_ENV')
-if virtual_env_path:
-    cwd = os.getcwd()
-    if os.path.dirname(virtual_env_path) == cwd:
-        virtual_env_name = os.path.basename(virtual_env_path)
+if venv_path:
+    if venv_path.parent == cwd:
+        venv_name = venv_path.name
     else:
-        home = os.path.expanduser('~')
-        venv_segment = virtual_env_path.replace(home, '~')
-        cwd_segment = cwd.replace(home, '~') + '/'
-        virtual_env_name = venv_segment.replace(cwd_segment, '')
-    virtual_env = f'({virtual_env_name})' # c(f'({virtual_env_name})', color_yellow)
+        home = str(Path.home())
+        venv_segment = str(venv_path).replace(home, '~')
+        cwd_segment = str(cwd).replace(home, '~') + '/'
+        venv_name = venv_segment.replace(cwd_segment, '')
+    venv = f'({venv_name})'
 else:
-    virtual_env = None
+    venv = None
 
 
-git_branch_output = subprocess.getoutput('git branch --no-color 2> /dev/null')
-match = re.search(r'\* (.+)', git_branch_output)
-if match:
-    git_branch_name = match.group(1)
-    git_branch = c(f'[{git_branch_name}]', color_yellow)
+is_git_dir = False
+for tested_dir in ([cwd] + list(cwd.parents)):
+    is_git_dir = (tested_dir / '.git').exists()
+    if is_git_dir:
+        break
+
+
+if is_git_dir:
+    git_branch_output = subprocess.getoutput('git rev-parse --abbrev-ref HEAD')
+    git_branch_name = git_branch_output.strip()
+    if git_branch_name:
+        git_branch = c(f'[{git_branch_name}]', COLOR_YELLOW)
+    else:
+        git_branch = None
 else:
     git_branch = None
 
 
-prompt = ' '.join(filter(None, [time, virtual_env, path, git_branch]))
+prompt = ' '.join(filter(None, [
+    venv,
+    c('\w', COLOR_BLUE),  # path
+    git_branch
+]))
 print(f'\n{prompt}\n\$ ')

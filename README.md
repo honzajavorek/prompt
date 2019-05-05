@@ -5,10 +5,10 @@ My bash prompt.
 ## Demo
 
 ```bash
-20:36 (env) ~/Projects/python.cz [master]
+(env) ~/Projects/python.cz [master]
 $ cd ..
 
-20:36 (python.cz/env) ~/Projects
+(python.cz/env) ~/Projects
 $ ⎜
 ```
 
