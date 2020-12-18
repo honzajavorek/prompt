@@ -7,7 +7,8 @@ from pathlib import Path
 VIRTUAL_ENV = os.getenv('VIRTUAL_ENV')
 
 
-COLOR_BLUE = '\033[1;34m'
+# https://stackoverflow.com/a/33206814/325365
+COLOR_CYAN = '\033[1;36m'
 COLOR_YELLOW = '\033[1;33m'
 COLOR_LIGHT_RED = '\033[1;31m'
 COLOR_GRAY = '\033[1;37m'
@@ -55,7 +56,7 @@ else:
 
 prompt = ' '.join(filter(None, [
     venv,
-    c('\w', COLOR_BLUE),  # path
+    c('\w', COLOR_CYAN),  # path
     git_branch
 ]))
 print(f'\n{prompt}\n\$ ')
